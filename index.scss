@@ -1,0 +1,35 @@
+@import "./_stitch-grid";
+
+$grid-debug: false;
+
+.grid {
+	@include grid(
+		$columns: 24,
+		$gutter-width: 14px,
+		$column-width: 27px,
+		$baseline: 10px
+	);
+}
+
+.grid-12 {
+	@include grid(
+		$columns: 12, 
+		$gutter-width: 20px, 
+		$column-width: 60px, 
+		$baseline: 10px
+	);	
+}
+
+.grid-16 {
+	@include grid(
+		$columns: 16,
+		$gutter-width: 20px,
+		$column-width: 40px,
+		$baseline: 10px
+	);
+}
+
+.grid--fluid {
+	max-width: 940px;
+	width: auto;
+}

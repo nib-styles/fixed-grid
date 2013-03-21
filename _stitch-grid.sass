@@ -1,0 +1,155 @@
+// Settings
+// --------------------------------------------------------
+
+$grid-debug: false !default
+$grid-border-box: false !default
+
+// Functions 
+// --------------------------------------------------------
+
+// Get the width of n number of columns in a grid
+@function grid-columns($n, $column-width, $gutter-width)
+  @return ($n * ($column-width + $gutter-width)) - $gutter-width
+
+// Get the total width of a grid
+@function grid-total-width($columns, $column-width, $gutter-width)
+  @return grid-columns($columns, $column-width, $gutter-width)
+
+// Find the greatest common factor of two integers
+@function -stitch-gcf($a, $b)
+  @if $b == 0
+    @return $a
+  @else
+    @return -stitch-gcf($b, $a % $b)
+
+// Check if a list contains a value
+@function -stitch-contains($list, $value)
+  @if type-of($list) == list
+    @return not not index($list, $value)
+  @else
+    @return $list == $value
+
+// Background Mixin
+// ------------------------------------------------------
+
+@mixin grid-background($column-width, $gutter-width, $baseline, $column-color: rgba(255,0,0,0.2), $baseline-color: rgba(0,0,0,0.3))
+  background: -webkit-linear-gradient(top, $baseline-color 1px, transparent 1px), -webkit-linear-gradient(left, $column-color 0, $column-color $column-width, transparent $column-width)
+  background-size: $baseline $baseline, ($column-width + $gutter-width) $baseline
+  background-position: 0 ($baseline - 1)
+
+// The Grid
+// -----------------------------------------------------
+
+@mixin grid($columns, $column-width, $gutter-width, $baseline)
+  @include clear-floats
+
+  @if $grid-debug
+    &:after
+      @include grid-background($column-width, $gutter-width, $baseline)
+      display: block
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+
+  @if $grid-border-box
+    box-sizing: content-box
+
+  width: grid-total-width($columns, $column-width, $gutter-width)
+  margin-left: auto
+  margin-right: auto
+  position: relative
+
+  &.is-fluid
+    width: auto
+
+  .grid__unit 
+    float: left
+    margin-right: 0.5 * $gutter-width
+    margin-left: 0.5 * $gutter-width
+
+    @include mobile
+      float: none
+
+    &.is-fluid
+      overflow: hidden
+      float: none
+
+    &.is-first
+      margin-left: 0
+
+    &.is-last
+      margin-right: 0
+
+    &.is-flush
+      margin-left: 0
+      margin-right: 0
+
+    &.is-centered
+      margin-left: auto
+      margin-right: auto
+      float: none
+
+    &.is-padded
+      box-sizing: border-box
+      margin-left: 0
+      margin-right: 0
+      padding-right: 0.5 * $gutter-width
+      padding-left: 0.5 * $gutter-width
+
+  @for $i from 1 through $columns
+    .grid__span-#{$i}
+      width: grid-columns($i, $column-width, $gutter-width)
+    .grid__prepend-#{$i}
+      margin-left: grid-columns($i, $column-width, $gutter-width) + (1.5 * $gutter-width)
+
+// Fluid grid units & offsets
+
+// USAGE: provide a space-separated list of integers, each of which represents
+// the number of parts that make up a grid component. Optionally provide a
+// modifier suffix that can be used to adjust grids in different contexts (e.g.
+// viewport dimensions)
+
+@mixin grid-build-units($units, $modifier: '')
+
+  // step through each value in the list of units
+  @each $n in $units
+
+    // this means we can avoid creating rules like `.unit-12-12 {}`
+    $x: $n - 1
+
+    @for $i from 1 through $x
+      // find the greatest common factor
+      $g: -stitch-gcf($i, $n)
+      $i-r: ()
+      $n-r: ()
+
+      @if $g > 1
+        // reduced value of $i
+        $i-r: $i/$g
+        // reduced value of $n
+        $n-r: $n/$g
+
+      // check if the reduced value of $n was also supplied
+      // in the list of units to be built
+      $canreduce: -stitch-contains($units, $n-r)
+
+      // create units based on fractions
+      .unit-#{$i}-#{$n}#{$modifier}
+        // if this unit can be reduced
+        // then extend the previous rule
+        @if $i-r and $canreduce
+          @extend .unit-#{$i-r}-#{$n-r}#{$modifier}
+        @else
+          width: percentage($i / $n)
+
+      // create unit offsets based on fractions
+      .before-#{$i}-#{$n}#{$modifier}
+        // if this offset can be reduced
+        // then extend the previous rule
+        @if $i-r and $canreduce
+          @extend .before-#{$i-r}-#{$n-r}#{$modifier}
+        @else
+          margin-left: percentage($i / $n)
