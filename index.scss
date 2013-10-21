@@ -1,4 +1,6 @@
-@import "./_stitch-grid";
+@import "lib/_grid";
+@import "lib/_breakpoints";
+@import "lib/_utils";
 
 $grid-debug: false;
 
@@ -13,11 +15,11 @@ $grid-debug: false;
 
 .grid-12 {
 	@include grid(
-		$columns: 12, 
-		$gutter-width: 20px, 
-		$column-width: 60px, 
+		$columns: 12,
+		$gutter-width: 20px,
+		$column-width: 60px,
 		$baseline: 10px
-	);	
+	);
 }
 
 .grid-16 {

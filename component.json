@@ -3,5 +3,13 @@
   "main": "index.scss",
   "version": "0.1.0",
   "dependencies": {},
-  "styles": ["index.scss", "_stitch-grid.sass"]
+  "styles": [
+    "index.css"
+  ],
+  "sass": [
+    "index.scss",
+    "_grid.sass",
+    "_utils.sass",
+    "_breakpoints.sass"
+  ]
 }
