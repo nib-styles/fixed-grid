@@ -1,0 +1,10 @@
+{
+  "name": "@nib-styles/fixed-grid",
+  "version": "0.2.0",
+  "main": "index.scss",
+  "main.css": "index.css",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nib-styles/fixed-grid.git"
+  }
+}
